@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador BODIVA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #FFCC00;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #FF0000;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 20px;
+      background-color: #FF0000;
+      color: white;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #resultado {
+      margin-top: 20px;
+      background: #222;
+      padding: 15px;
+      border-radius: 5px;
+    }
+
+    canvas {
+      margin-top: 20px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Simulador de Investimentos BODIVA 🇦🇴</h1>
+
+  <div class="container">
+    <label>Capital Inicial (KZ):</label>
+    <input type="number" id="capital" placeholder="Ex: 300000">
+
+    <label>Taxa de Rendimento Anual (%):</label>
+    <input type="number" id="taxa" placeholder="Ex: 7">
+
+    <label>Período (anos):</label>
+    <input type="number" id="anos" placeholder="Ex: 3" max="5">
+
+    <button onclick="simular()">Simular</button>
+
+    <div id="resultado"></div>
+
+    <canvas id="grafico" width="600" height="300"></canvas>
+  </div>
+
+  <footer>
+    Desenvolvido por Dala De Carvalho – Educador Musical Angolano
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    function simular() {
+      const capital = parseFloat(document.getElementById('capital').value);
+      const taxa = parseFloat(document.getElementById('taxa').value) / 100;
+      const anos = parseInt(document.getElementById('anos').value);
+
+      if (isNaN(capital) || isNaN(taxa) || isNaN(anos)) {
+        alert("Por favor, preencha todos os campos corretamente.");
+        return;
+      }
+
+      let montantes = [];
+      let labels = [];
+      let valorAtual = capital;
+
+      for (let i = 1; i <= anos; i++) {
+        valorAtual *= (1 + taxa);
+        montantes.push(valorAtual.toFixed(2));
+        labels.push(`Ano ${i}`);
+      }
+
+      document.getElementById('resultado').innerHTML =
+        `<strong>Valor final após ${anos} anos:</strong> <br><h2>${valorAtual.toFixed(2)} KZ</h2>`;
+
+      // Exibir gráfico
+      const ctx = document.getElementById('grafico').getContext('2d');
+      if (window.grafico) window.grafico.destroy(); // limpa gráfico anterior
+
+      window.grafico = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Projeção do Investimento',
+            data: montantes,
+            borderColor: '#FFCC00',
+            backgroundColor: '#FF000033',
+            fill: true,
+            tension: 0.2
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { labels: { color: "#fff" } }
+          },
+          scales: {
+            x: { ticks: { color: "#fff" } },
+            y: { ticks: { color: "#fff" } }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
